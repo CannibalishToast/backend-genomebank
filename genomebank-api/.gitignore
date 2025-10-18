@@ -1,0 +1,83 @@
+# =========================================================
+# 🧱 BUILD & DEPENDENCIES
+# =========================================================
+target/
+build/
+out/
+dependency-reduced-pom.xml
+
+# Ignorar archivos de Maven Wrapper binarios
+.mvn/wrapper/maven-wrapper.jar
+.mvn/timing.properties
+
+# No ignorar los target de los recursos principales
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+# =========================================================
+# 🧰 IDE / TOOLS
+# =========================================================
+### Spring Tool Suite ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea/
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+### VS Code ###
+.vscode/
+
+# =========================================================
+# ⚙️ OS / SYSTEM FILES
+# =========================================================
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# =========================================================
+# 🔐 SECURITY / CONFIG
+# =========================================================
+# Archivos de configuración local (no subir credenciales)
+src/main/resources/application.properties
+src/main/resources/application.yml
+src/main/resources/application-dev.properties
+src/main/resources/application-prod.properties
+
+# Llaves, tokens o certificados locales
+*.jks
+*.pem
+*.p12
+*.key
+*.crt
+*.csr
+.env
+.env.local
+
+# =========================================================
+# 🧪 TESTS / LOGS
+# =========================================================
+logs/
+*.log
+*.tmp
+test-output/
