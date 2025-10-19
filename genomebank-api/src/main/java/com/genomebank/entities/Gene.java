@@ -30,4 +30,7 @@ public class Gene {
     @Column(name="sequence")
     private String sequence;
 
+    @ManyToOne
+    @JoinColumn(name = "chromosome_id", nullable = false)
+    private Chromosome chromosome;
 }

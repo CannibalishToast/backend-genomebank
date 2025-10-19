@@ -23,4 +23,7 @@ public class Chromosome {
     @Column(name="sequence")
     private String sequence;
 
+    @ManyToOne
+    @JoinColumn(name = "genome_id", nullable = false)
+    private Genome genome;
 }

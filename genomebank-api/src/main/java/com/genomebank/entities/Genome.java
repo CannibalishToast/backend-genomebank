@@ -17,4 +17,7 @@ public class Genome {
     @Column(name="version")
     private String version;
 
+    @ManyToOne
+    @JoinColumn(name = "species_id", nullable = false)
+    private Species species;
 }

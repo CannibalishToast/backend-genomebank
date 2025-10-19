@@ -14,5 +14,13 @@ public class GeneFunction {
     @Column(name="id")
     private Long id;
 
+    @ManyToOne
+    @JoinColumn(name = "gene_id", nullable = false)
+    private Gene gene;
+
+    // Muchos registros pertenecen a una función
+    @ManyToOne
+    @JoinColumn(name = "function_id", nullable = false)
+    private Function function;
 
 }
