@@ -1,4 +1,4 @@
-package com.genomebank.genomebank_api;
+package com.genomebank;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
