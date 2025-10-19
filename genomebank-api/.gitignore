@@ -81,3 +81,7 @@ logs/
 *.log
 *.tmp
 test-output/
+
+### VS Code ###
+.vscode/
+
