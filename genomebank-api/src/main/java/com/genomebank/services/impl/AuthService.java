@@ -28,12 +28,12 @@ public class AuthService implements IAuthService {
 
     @Override
     public AuthResponse register(UserInDTO userInDTO) {
-        // 🧩 Verificar duplicado de email
+        //verificar duplicados de email
         if (userRepository.findByEmail(userInDTO.getEmail()).isPresent()) {
             throw new RuntimeException("El email ya está registrado");
         }
 
-        // 🧠 Crear nuevo usuario
+        //Crear nuevo usuario
         User user = new User(
                 null,
                 userInDTO.getName(),
@@ -44,10 +44,10 @@ public class AuthService implements IAuthService {
 
         userRepository.save(user);
 
-        // 🪪 Generar token JWT
+        //generar token JWT
         String token = jwtService.generateToken(user);
 
-        // 📦 DTO de salida
+        //DTO de salida
         UserOutDTO userOutDTO = new UserOutDTO(
                 user.getId(),
                 user.getName(),
@@ -61,7 +61,7 @@ public class AuthService implements IAuthService {
     @Override
     public AuthResponse login(LoginRequest loginRequest) {
         try {
-            // 🔒 Autenticar usando el AuthenticationManager de Spring
+            //Autenticar usando el AuthenticationManager de Spring
             authManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
                             loginRequest.getEmail(),
@@ -72,14 +72,14 @@ public class AuthService implements IAuthService {
             throw new RuntimeException("Credenciales inválidas");
         }
 
-        // 🔍 Recuperar usuario autenticado
+        // Recuperar usuario autenticado
         User user = userRepository.findByEmail(loginRequest.getEmail())
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
-        // 🪪 Generar JWT
+        //Generar JWT
         String token = jwtService.generateToken(user);
 
-        // 📦 Crear DTO de salida
+        //Crear DTO de salida
         UserOutDTO userOutDTO = new UserOutDTO(
                 user.getId(),
                 user.getName(),

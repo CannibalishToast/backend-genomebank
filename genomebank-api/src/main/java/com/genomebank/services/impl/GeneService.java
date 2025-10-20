@@ -150,7 +150,7 @@ public class GeneService implements IGeneService {
         return mapToOutDTO(updated);
     }
 
-    // 🔹 Método auxiliar
+    //metodo auxiliar
     private GeneOutDTO mapToOutDTO(Gene gene) {
         return new GeneOutDTO(
                 gene.getId(),
