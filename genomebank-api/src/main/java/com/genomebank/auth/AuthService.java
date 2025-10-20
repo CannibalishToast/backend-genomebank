@@ -24,15 +24,18 @@ public class AuthService {
 
     public AuthResponse login(AuthRequest request) {
         try {
-            // 🔒 Autenticar usuario
+            // 🔒 Autenticar usuario con el AuthenticationManager
             Authentication authentication = authManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
+                    new UsernamePasswordAuthenticationToken(
+                            request.getUsername(),
+                            request.getPassword()
+                    )
             );
 
-            // 🔎 Cargar detalles del usuario
+            // 🔎 Cargar detalles del usuario (ya validado)
             var user = userDetailsService.loadUserByUsername(request.getUsername());
 
-            // 🪪 Generar JWT
+            // 🪪 Generar JWT con claims opcionales (vacíos por ahora)
             String jwtToken = jwtService.generateToken(user.getUsername(), Map.of());
 
             // ✅ Retornar token al cliente
@@ -43,4 +46,3 @@ public class AuthService {
         }
     }
 }
-
