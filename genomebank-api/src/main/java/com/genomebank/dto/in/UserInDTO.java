@@ -3,8 +3,12 @@ package com.genomebank.dto.in;
 import com.genomebank.entities.Role;
 import jakarta.validation.constraints.*;
 import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class UserInDTO {
     @NotBlank
     private String name;
