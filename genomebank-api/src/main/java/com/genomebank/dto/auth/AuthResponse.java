@@ -1,0 +1,11 @@
+package com.genomebank.dto.auth;
+
+import com.genomebank.dto.out.UserOutDTO;
+import lombok.Data;
+
+@Data
+public class AuthResponse {
+    private String token;
+    private String tokenType = "Bearer";
+    private UserOutDTO user;
+}
