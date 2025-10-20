@@ -25,4 +25,5 @@ public class GeneInDTO {
     private Long chromosomeId;
 
     private String sequence;
+
 }
