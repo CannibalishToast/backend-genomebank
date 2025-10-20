@@ -29,7 +29,7 @@ public class AuthService implements IAuthService {
     @Override
     public AuthResponse register(UserInDTO userInDTO) {
         // 🧩 Verificar duplicado de email
-        if (userRepository.findByUsername(userInDTO.getEmail()).isPresent()) {
+        if (userRepository.findByEmail(userInDTO.getEmail()).isPresent()) {
             throw new RuntimeException("El email ya está registrado");
         }
 
@@ -73,7 +73,7 @@ public class AuthService implements IAuthService {
         }
 
         // 🔍 Recuperar usuario autenticado
-        User user = userRepository.findByUsername(loginRequest.getEmail())
+        User user = userRepository.findByEmail(loginRequest.getEmail())
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
         // 🪪 Generar JWT

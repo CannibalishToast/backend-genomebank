@@ -7,7 +7,7 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 @Entity
-@Table(name="function")
+@Table(name="`function`")
 public class Function {
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
