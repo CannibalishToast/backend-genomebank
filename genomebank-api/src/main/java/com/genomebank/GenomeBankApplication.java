@@ -4,10 +4,9 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class GenomebankApiApplication {
+public class GenomeBankApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(GenomebankApiApplication.class, args);
-	}
-
+    public static void main(String[] args) {
+        SpringApplication.run(GenomeBankApplication.class, args);
+    }
 }
