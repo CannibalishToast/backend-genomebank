@@ -20,6 +20,7 @@ public class Function {
     @Column(name="descriptiveName")
     private String descriptiveName;
 
+    @Enumerated(EnumType.STRING)
     @Column(name="category")
     private Category category;
 
