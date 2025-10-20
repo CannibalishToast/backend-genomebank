@@ -6,28 +6,34 @@ import com.genomebank.dto.in.UserInDTO;
 import com.genomebank.dto.response.UserOutDTO;
 import com.genomebank.entities.User;
 import com.genomebank.repositories.UserRepository;
+import com.genomebank.auth.JwtService;
 import com.genomebank.services.IAuthService;
-import com.genomebank.security.JwtService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class AuthService implements IAuthService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
+    private final AuthenticationManager authManager;
 
     @Override
     public AuthResponse register(UserInDTO userInDTO) {
-        // Validar si el correo ya existe
-        if (userRepository.findByEmail(userInDTO.getEmail()).isPresent()) {
-            throw new RuntimeException("El email ya esta registrado");
+        // 🧩 Verificar duplicado de email
+        if (userRepository.findByUsername(userInDTO.getEmail()).isPresent()) {
+            throw new RuntimeException("El email ya está registrado");
         }
 
-        // Crear el nuevo usuario
+        // 🧠 Crear nuevo usuario
         User user = new User(
                 null,
                 userInDTO.getName(),
@@ -38,32 +44,42 @@ public class AuthService implements IAuthService {
 
         userRepository.save(user);
 
-        // Crear DTO de salida
+        // 🪪 Generar token JWT
+        String token = jwtService.generateToken(user);
+
+        // 📦 DTO de salida
         UserOutDTO userOutDTO = new UserOutDTO(
                 user.getId(),
                 user.getName(),
                 user.getEmail(),
                 user.getRole()
         );
-
-        // Generar token JWT
-        String token = jwtService.generateToken(user);
 
         return new AuthResponse(token, "Bearer", userOutDTO);
     }
 
     @Override
     public AuthResponse login(LoginRequest loginRequest) {
-        // Buscar usuario por email
-        User user = userRepository.findByEmail(loginRequest.getEmail())
-                .orElseThrow(() -> new RuntimeException("Credenciales invalidas"));
-
-        // Verificar contraseña
-        if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
-            throw new RuntimeException("Credenciales invalidas");
+        try {
+            // 🔒 Autenticar usando el AuthenticationManager de Spring
+            authManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            loginRequest.getEmail(),
+                            loginRequest.getPassword()
+                    )
+            );
+        } catch (AuthenticationException e) {
+            throw new RuntimeException("Credenciales inválidas");
         }
 
-        // Crear DTO de salida
+        // 🔍 Recuperar usuario autenticado
+        User user = userRepository.findByUsername(loginRequest.getEmail())
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        // 🪪 Generar JWT
+        String token = jwtService.generateToken(user);
+
+        // 📦 Crear DTO de salida
         UserOutDTO userOutDTO = new UserOutDTO(
                 user.getId(),
                 user.getName(),
@@ -71,9 +87,7 @@ public class AuthService implements IAuthService {
                 user.getRole()
         );
 
-        // Generar token JWT
-        String token = jwtService.generateToken(user);
-
         return new AuthResponse(token, "Bearer", userOutDTO);
     }
 }
+
