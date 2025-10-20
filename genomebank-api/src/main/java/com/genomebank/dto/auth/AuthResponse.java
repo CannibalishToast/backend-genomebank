@@ -1,6 +1,6 @@
 package com.genomebank.dto.auth;
 
-import com.genomebank.dto.out.UserOutDTO;
+import com.genomebank.dto.response.UserOutDTO;
 import lombok.Data;
 
 @Data
