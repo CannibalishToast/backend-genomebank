@@ -20,5 +20,6 @@ public interface GeneRepository extends JpaRepository<Gene, Long> {
     //Buscar genes por cromosoma y rango
     List<Gene> findByChromosomeIdAndStartPositionGreaterThanEqualAndEndPositionLessThanEqual(Long chromosomeId, Long start, Long end);
 
+    //Prueba de sincronizacion
 }
 
