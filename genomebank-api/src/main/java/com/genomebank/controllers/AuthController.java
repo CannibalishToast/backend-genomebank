@@ -19,7 +19,7 @@ public class AuthController {
 
     // POST /auth/register → Crear cuenta de usuario (rol USER por defecto)
     @PostMapping("/register")
-    public ResponseEntity<AuthResponse> register(@RequestBody UserInDTO dto) {git
+    public ResponseEntity<AuthResponse> register(@RequestBody UserInDTO dto) {
         if (dto.getRole() == null) {
             dto.setRole(Role.USER);
         }
