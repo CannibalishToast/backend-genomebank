@@ -30,16 +30,33 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
 
-        final String authHeader = request.getHeader("Authorization");
+        // 🚫 Evita aplicar el filtro a los endpoints públicos (/auth/**)
+        if (request.getServletPath().startsWith("/auth")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
 
+        final String authHeader = request.getHeader("Authorization");
+        final String jwt;
+        final String username;
+
+        // 🧾 Verifica si hay un header Authorization con formato Bearer
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        final String jwt = authHeader.substring(7);
-        final String username = jwtService.extractUsername(jwt);
+        jwt = authHeader.substring(7);
 
+        try {
+            username = jwtService.extractUsername(jwt);
+        } catch (Exception e) {
+            // ⚠️ Si el token es inválido o no puede extraerse, continúa sin autenticar
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        // Si el usuario no está autenticado aún
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
 
@@ -57,6 +74,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
         }
 
+        // ✅ Continúa el flujo normal
         filterChain.doFilter(request, response);
     }
 }
