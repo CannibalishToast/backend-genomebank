@@ -5,6 +5,7 @@ import com.genomebank.dto.response.ChromosomeOutDTO;
 import com.genomebank.services.impl.ChromosomeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,7 +17,7 @@ public class ChromosomeController {
 
     private final ChromosomeService chromosomeService;
 
-    // GET /chromosomes → Listar todos o filtrar por genoma (?genomeId=)
+    // GET /chromosomes Listar todos o filtrar por genoma (?genomeId=)
     @GetMapping
     public ResponseEntity<List<ChromosomeOutDTO>> getAllChromosomes(
             @RequestParam(required = false) Long genomeId
@@ -24,19 +25,21 @@ public class ChromosomeController {
         return ResponseEntity.ok(chromosomeService.getAllChromosomes(genomeId));
     }
 
-    // GET /chromosomes/{id} → Consultar un cromosoma específico
+    // GET /chromosomes/{id} Consultar un cromosoma específico
     @GetMapping("/{id}")
     public ResponseEntity<ChromosomeOutDTO> getChromosomeById(@PathVariable Long id) {
         return ResponseEntity.ok(chromosomeService.getChromosomeById(id));
     }
 
-    // POST /chromosomes → Crear un nuevo cromosoma (solo ADMIN)
+    // POST /chromosomes Crear un nuevo cromosoma (solo ADMIN)
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ChromosomeOutDTO> createChromosome(@RequestBody ChromosomeInDTO dto) {
         return ResponseEntity.ok(chromosomeService.createChromosome(dto));
     }
 
-    // PUT /chromosomes/{id} → Actualizar un cromosoma (solo ADMIN)
+    // PUT /chromosomes/{id} Actualizar un cromosoma (solo ADMIN)
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<ChromosomeOutDTO> updateChromosome(
             @PathVariable Long id,
@@ -45,14 +48,15 @@ public class ChromosomeController {
         return ResponseEntity.ok(chromosomeService.updateChromosome(id, dto));
     }
 
-    // DELETE /chromosomes/{id} → Eliminar un cromosoma (solo ADMIN)
+    // DELETE /chromosomes/{id} Eliminar un cromosoma (solo ADMIN)
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteChromosome(@PathVariable Long id) {
         chromosomeService.deleteChromosome(id);
         return ResponseEntity.noContent().build();
     }
 
-    // GET /chromosomes/{id}/sequence → Consultar la secuencia completa de ADN
+    // GET /chromosomes/{id}/sequence Consultar la secuencia completa de ADN
     @GetMapping("/{id}/sequence")
     public ResponseEntity<String> getChromosomeSequence(@PathVariable Long id) {
         return ResponseEntity.ok(chromosomeService.getFullSequence(id));
@@ -69,6 +73,7 @@ public class ChromosomeController {
     }
 
     // PUT /chromosomes/{id}/sequence (solo ADMIN) → Registrar o actualizar la secuencia
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}/sequence")
     public ResponseEntity<ChromosomeOutDTO> updateChromosomeSequence(
             @PathVariable Long id,

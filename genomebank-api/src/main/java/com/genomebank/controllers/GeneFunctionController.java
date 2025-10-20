@@ -16,26 +16,26 @@ public class GeneFunctionController {
 
     private final GeneFunctionService geneFunctionService;
 
-    // ✅ GET /genes/{geneId}/functions → Listar las funciones asociadas a un gen
+    //GET /genes/{geneId}/functions listar las funciones asociadas a un gen
     @GetMapping
     public ResponseEntity<List<GeneFunctionOutDTO>> getFunctionsByGene(@PathVariable Long geneId) {
         return ResponseEntity.ok(geneFunctionService.getFunctionsByGeneId(geneId));
     }
 
-    //  POST /genes/{geneId}/functions → Asociar una nueva función a un gen
+    // POST /genes/{geneId}/functions Asociar una nueva función a un gen
     @PostMapping
     public ResponseEntity<GeneFunctionOutDTO> addFunctionToGene(
             @PathVariable Long geneId,
             @RequestBody GeneFunctionInDTO geneFunctionInDTO
     ) {
-        // Asegurar que el DTO contenga el ID del gen en la petición
+        // Asegurar que el DTO contenga el ID del gen en la peticion
         geneFunctionInDTO.setGeneId(geneId);
 
         GeneFunctionOutDTO created = geneFunctionService.addFunctionToGene(geneFunctionInDTO);
         return ResponseEntity.ok(created);
     }
 
-    // ✅ DELETE /genes/{geneId}/functions/{functionId} → Eliminar una asociación
+    // DELETE /genes/{geneId}/functions/{functionId} Eliminar una asociación
     @DeleteMapping("/{functionId}")
     public ResponseEntity<String> removeFunctionFromGene(
             @PathVariable Long geneId,
