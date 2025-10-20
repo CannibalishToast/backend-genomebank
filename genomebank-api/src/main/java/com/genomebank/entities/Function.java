@@ -14,13 +14,17 @@ public class Function {
     @Column(name="id")
     private Long id;
 
-    @Column(name="code")
+    @Column(name="code", nullable = false)
     private String code;
 
     @Column(name="descriptiveName")
     private String descriptiveName;
 
     @Column(name="category")
-    private String category;
+    private Category category;
+
+    public enum Category {
+        BP, MF, CC
+    }
 
 }
