@@ -1,4 +1,4 @@
-package com.genomebank.dto.in;
+package com.genomebank.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
