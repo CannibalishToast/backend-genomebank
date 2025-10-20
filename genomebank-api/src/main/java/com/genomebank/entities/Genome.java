@@ -16,7 +16,7 @@ public class Genome {
     @Column(name="id")
     private Long id;
 
-    @Column(name="version")
+    @Column(name="version", nullable = false)
     private String version;
 
     @ManyToOne
