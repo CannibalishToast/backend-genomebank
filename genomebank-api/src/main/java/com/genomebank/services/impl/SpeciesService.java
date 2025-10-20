@@ -42,12 +42,13 @@ public class SpeciesService implements ISpeciesService {
 
     @Override
     public SpeciesOutDTO createSpecies(SpeciesInDTO speciesInDTO) {
-        Species species = new Species(
-                null,
-                speciesInDTO.getScientificName(),
-                speciesInDTO.getCommonName()
-        );
+        // crea nueva instancia usando constructor vacio
+        Species species = new Species();
+        species.setScientificName(speciesInDTO.getScientificName());
+        species.setCommonName(speciesInDTO.getCommonName());
+
         Species saved = speciesRepository.save(species);
+
         return new SpeciesOutDTO(
                 saved.getId(),
                 saved.getScientificName(),

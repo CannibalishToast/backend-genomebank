@@ -1,30 +1,30 @@
 package com.genomebank.entities;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name="species")
+@Table(name = "species")
 public class Species {
+
     @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
-    @Column(name="id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
 
-    @Column(name = "scientificName")
+    // Campo obligatorio
+    @Column(name = "scientificName", nullable = false, length = 150)
     private String scientificName;
 
-    @Column(name = "commonName")
+    // Campo no obligatorio
+    @Column(name = "commonName", length = 150)
     private String commonName;
 
-
-
-
-
-
+    // relacion con Genome, uno a varios.
+    @OneToMany(mappedBy = "species", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Genome> genomes;
 }
