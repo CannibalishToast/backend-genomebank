@@ -1,0 +1,16 @@
+package com.genomebank.dto.in;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class GeneAnalysisOutDTO {
+    private Long id;
+    private String symbol;
+    private Long startPosition;
+    private Long endPosition;
+    private String strand;
+}

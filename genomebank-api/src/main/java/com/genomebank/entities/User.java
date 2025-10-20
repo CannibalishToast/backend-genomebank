@@ -21,13 +21,31 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String username;
+    @Column(nullable = false)
+    private String name;
+
+    @Column(nullable = false, unique = true)
+    private String email;
+
+    @Column(nullable = false)
     private String password;
-    private String role; // Ejemplo: "ADMIN", "USER"
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Role role; // Enum con valores como ADMIN, USER, etc.
+
+    // ==============================
+    // Implementación de UserDetails
+    // ==============================
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(role));
+        return List.of(new SimpleGrantedAuthority(role.name()));
+    }
+
+    @Override
+    public String getUsername() {
+        return email; // Spring usará el email como "username"
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.genomebank.auth;
 
+import com.genomebank.entities.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -14,11 +15,9 @@ import java.util.function.Function;
 @Service
 public class JwtService {
 
-    // 🔐 Se obtiene la clave desde application.properties
     @Value("${jwt.secret}")
     private String secretKey;
 
-    // ⏳ También parametrizamos el tiempo de expiración (en milisegundos)
     @Value("${jwt.expiration}")
     private long expirationMs;
 
@@ -26,7 +25,9 @@ public class JwtService {
         return Keys.hmacShaKeyFor(secretKey.getBytes());
     }
 
-    // 🔧 Generar un JWT
+    // =======================================================
+    // 🔐 Generar token — versión general (para AuthRequest)
+    // =======================================================
     public String generateToken(String username, Map<String, Object> extraClaims) {
         return Jwts.builder()
                 .claims(extraClaims)
@@ -37,7 +38,28 @@ public class JwtService {
                 .compact();
     }
 
+    // =======================================================
+    // 🧩 Generar token — versión adaptada al AuthService nuevo
+    // =======================================================
+    public String generateToken(User user) {
+        Map<String, Object> claims = Map.of(
+                "id", user.getId(),
+                "email", user.getEmail(),
+                "role", user.getRole().name()
+        );
+
+        return Jwts.builder()
+                .claims(claims)
+                .subject(user.getEmail()) // el email actúa como username
+                .issuedAt(new Date(System.currentTimeMillis()))
+                .expiration(new Date(System.currentTimeMillis() + expirationMs))
+                .signWith(getSigningKey())
+                .compact();
+    }
+
+    // =======================================================
     // 📤 Extraer el username (subject)
+    // =======================================================
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }

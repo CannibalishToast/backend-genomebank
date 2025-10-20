@@ -1,30 +1,43 @@
 package com.genomebank.auth;
 
+import com.genomebank.dto.auth.AuthResponse;
+import com.genomebank.dto.auth.LoginRequest;
+import com.genomebank.dto.in.UserInDTO;
+import com.genomebank.services.IAuthService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/auth")
+@RequiredArgsConstructor
 public class AuthController {
 
-    private final AuthService authService;
+    private final IAuthService authService;
 
-    public AuthController(AuthService authService) {
-        this.authService = authService;
+    /**
+     * 🔐 Endpoint de registro de usuario
+     */
+    @PostMapping("/register")
+    public ResponseEntity<?> register(@RequestBody UserInDTO userInDTO) {
+        try {
+            AuthResponse response = authService.register(userInDTO);
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
+    /**
+     * 🔑 Endpoint de inicio de sesión
+     */
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(@RequestBody AuthRequest request) {
+    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
         try {
-            // Delegar autenticación completamente al AuthService
             AuthResponse response = authService.login(request);
             return ResponseEntity.ok(response);
-
-        } catch (AuthenticationException e) {
-            return ResponseEntity.status(401).body(new AuthResponse("Credenciales inválidas"));
         } catch (RuntimeException e) {
-            return ResponseEntity.status(400).body(new AuthResponse(e.getMessage()));
+            return ResponseEntity.status(401).body(e.getMessage());
         }
     }
 }
