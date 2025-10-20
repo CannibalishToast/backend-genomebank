@@ -16,5 +16,6 @@ public interface GeneRepository extends JpaRepository<Gene, Long> {
 
     // Filtro por rango de posiciones (?start=, ?end=)
     List<Gene> findByStartPositionGreaterThanEqualAndEndPositionLessThanEqual(Long start, Long end);
+
 }
 
