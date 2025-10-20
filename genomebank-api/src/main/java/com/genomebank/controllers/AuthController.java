@@ -4,9 +4,10 @@ import com.genomebank.dto.auth.AuthResponse;
 import com.genomebank.dto.auth.LoginRequest;
 import com.genomebank.dto.in.UserInDTO;
 import com.genomebank.entities.Role;
-import com.genomebank.entities.User;
-import com.genomebank.services.impl.AuthService;
+import com.genomebank.services.IAuthService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,20 +16,37 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class AuthController {
 
-    private final AuthService authService;
+    private final IAuthService authService;
 
-    // POST /auth/register → Crear cuenta de usuario (rol USER por defecto)
+
     @PostMapping("/register")
-    public ResponseEntity<AuthResponse> register(@RequestBody UserInDTO dto) {
-        if (dto.getRole() == null) {
-            dto.setRole(Role.USER);
+    public ResponseEntity<?> register(@Valid @RequestBody UserInDTO dto) {
+        try {
+            // Si el rol no se especifica, asignar USER por defecto
+            if (dto.getRole() == null) {
+                dto.setRole(Role.USER);
+            }
+
+            AuthResponse response = authService.register(dto);
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+
+        } catch (RuntimeException e) {
+            // Ejemplo: "El email ya está registrado"
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
-        return ResponseEntity.ok(authService.register(dto));
     }
 
-    // POST /auth/login → Iniciar sesión y obtener token JWT
+
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest loginRequest) {
-        return ResponseEntity.ok(authService.login(loginRequest));
+    public ResponseEntity<?> login(@Valid @RequestBody LoginRequest loginRequest) {
+        try {
+            AuthResponse response = authService.login(loginRequest);
+            return ResponseEntity.ok(response);
+
+        } catch (RuntimeException e) {
+            // Ejemplo: "Credenciales inválidas"
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+        }
     }
 }
+
