@@ -1,11 +1,15 @@
 package com.genomebank.controllers;
 
+import com.genomebank.dto.response.GeneAnalysisOutDTO;
+import com.genomebank.dto.response.SequenceStatsOutDTO;
+import com.genomebank.services.impl.AnalysisService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import java.util.List;
 
 @RestController
 @RequestMapping("/analysis")
