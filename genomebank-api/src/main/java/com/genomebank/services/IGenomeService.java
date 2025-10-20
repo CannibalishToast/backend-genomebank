@@ -5,9 +5,10 @@ import com.genomebank.dto.response.GenomeOutDTO;
 import java.util.List;
 
 public interface IGenomeService {
-    List<GenomeOutDTO> getAll(Long speciesId);
-    GenomeOutDTO getById(Long id);
-    GenomeOutDTO create(GenomeInDTO dto);
-    GenomeOutDTO update(Long id, GenomeInDTO dto);
-    boolean delete(Long id);
+
+    List<GenomeOutDTO> getAllGenomes(Long speciesId);
+    GenomeOutDTO getGenomeById(Long id);
+    GenomeOutDTO createGenome(GenomeInDTO genomeInDTO);
+    GenomeOutDTO updateGenome(Long id, GenomeInDTO genomeInDTO);
+    void deleteGenome(Long id);
 }

@@ -3,66 +3,157 @@ package com.genomebank.services.impl;
 import com.genomebank.dto.in.ChromosomeInDTO;
 import com.genomebank.dto.response.ChromosomeOutDTO;
 import com.genomebank.entities.Chromosome;
+import com.genomebank.entities.Genome;
 import com.genomebank.repositories.ChromosomeRepository;
+import com.genomebank.repositories.GenomeRepository;
 import com.genomebank.services.IChromosomeService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class ChromosomeService implements IChromosomeService {
 
     private final ChromosomeRepository chromosomeRepository;
-
-    public ChromosomeService(ChromosomeRepository chromosomeRepository) {
-        this.chromosomeRepository = chromosomeRepository;
-    }
+    private final GenomeRepository genomeRepository;
 
     @Override
-    public List<ChromosomeOutDTO> getAll(Long genomeId) {
+    public List<ChromosomeOutDTO> getAllChromosomes(Long genomeId) {
         List<Chromosome> chromosomes = (genomeId != null)
                 ? chromosomeRepository.findByGenomeId(genomeId)
                 : chromosomeRepository.findAll();
 
         return chromosomes.stream()
-                .map(c -> new ChromosomeOutDTO(c.getId(), c.getName(), c.getLength(), c.getSequence()))
-                .toList();
+                .map(c -> new ChromosomeOutDTO(
+                        c.getId(),
+                        c.getName(),
+                        c.getLength(),
+                        c.getSequence(),
+                        c.getGenome().getId()
+                ))
+                .collect(Collectors.toList());
     }
 
     @Override
-    public ChromosomeOutDTO getById(Long id) {
-        Chromosome c = chromosomeRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Chromosome not found"));
-        return new ChromosomeOutDTO(c.getId(), c.getName(), c.getLength(), c.getSequence());
+    public ChromosomeOutDTO getChromosomeById(Long id) {
+        Chromosome chromosome = chromosomeRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Cromosoma no encontrado"));
+
+        return new ChromosomeOutDTO(
+                chromosome.getId(),
+                chromosome.getName(),
+                chromosome.getLength(),
+                chromosome.getSequence(),
+                chromosome.getGenome().getId()
+        );
     }
 
     @Override
-    public ChromosomeOutDTO create(ChromosomeInDTO dto) {
-        Chromosome c = new Chromosome();
-        c.setName(dto.getName());
-        c.setLength(dto.getLength());
-        c.setSequence(dto.getSequence());
-        chromosomeRepository.save(c);
-        return new ChromosomeOutDTO(c.getId(), c.getName(), c.getLength(), c.getSequence());
-    }
+    public ChromosomeOutDTO createChromosome(ChromosomeInDTO chromosomeInDTO) {
+        Genome genome = genomeRepository.findById(chromosomeInDTO.getGenomeId())
+                .orElseThrow(() -> new RuntimeException("Genoma no encontrado"));
 
-    @Override
-    public ChromosomeOutDTO update(Long id, ChromosomeInDTO dto) {
-        Chromosome c = chromosomeRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Chromosome not found"));
-        c.setName(dto.getName());
-        c.setLength(dto.getLength());
-        c.setSequence(dto.getSequence());
-        chromosomeRepository.save(c);
-        return new ChromosomeOutDTO(c.getId(), c.getName(), c.getLength(), c.getSequence());
-    }
-
-    @Override
-    public boolean delete(Long id) {
-        if (chromosomeRepository.existsById(id)) {
-            chromosomeRepository.deleteById(id);
-            return true;
+        // Validar que la longitud coincida con la secuencia
+        if (chromosomeInDTO.getSequence() != null &&
+                !chromosomeInDTO.getLength().equals((long) chromosomeInDTO.getSequence().length())) {
+            throw new RuntimeException("La longitud no coincide con la secuencia");
         }
-        return false;
+
+        Chromosome chromosome = new Chromosome(
+                null,
+                chromosomeInDTO.getName(),
+                chromosomeInDTO.getLength(),
+                chromosomeInDTO.getSequence(),
+                genome
+        );
+
+        Chromosome saved = chromosomeRepository.save(chromosome);
+
+        return new ChromosomeOutDTO(
+                saved.getId(),
+                saved.getName(),
+                saved.getLength(),
+                saved.getSequence(),
+                saved.getGenome().getId()
+        );
+    }
+
+    @Override
+    public ChromosomeOutDTO updateChromosome(Long id, ChromosomeInDTO chromosomeInDTO) {
+        Chromosome chromosome = chromosomeRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Cromosoma no encontrado"));
+
+        Genome genome = genomeRepository.findById(chromosomeInDTO.getGenomeId())
+                .orElseThrow(() -> new RuntimeException("Genoma no encontrado"));
+
+        if (chromosomeInDTO.getSequence() != null &&
+                !chromosomeInDTO.getLength().equals((long) chromosomeInDTO.getSequence().length())) {
+            throw new RuntimeException("La longitud no coincide con la secuencia");
+        }
+
+        chromosome.setName(chromosomeInDTO.getName());
+        chromosome.setLength(chromosomeInDTO.getLength());
+        chromosome.setSequence(chromosomeInDTO.getSequence());
+        chromosome.setGenome(genome);
+
+        Chromosome updated = chromosomeRepository.save(chromosome);
+
+        return new ChromosomeOutDTO(
+                updated.getId(),
+                updated.getName(),
+                updated.getLength(),
+                updated.getSequence(),
+                updated.getGenome().getId()
+        );
+    }
+
+    @Override
+    public void deleteChromosome(Long id) {
+        if (!chromosomeRepository.existsById(id)) {
+            throw new RuntimeException("Cromosoma no encontrado");
+        }
+        chromosomeRepository.deleteById(id);
+    }
+
+    @Override
+    public String getFullSequence(Long id) {
+        Chromosome chromosome = chromosomeRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Cromosoma no encontrado"));
+        return chromosome.getSequence();
+    }
+
+    @Override
+    public String getSequenceRange(Long id, Long start, Long end) {
+        Chromosome chromosome = chromosomeRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Cromosoma no encontrado"));
+
+        if (start < 1 || end > chromosome.getLength() || start > end) {
+            throw new RuntimeException("Rango inválido");
+        }
+
+        // Substring usa índices base 0
+        return chromosome.getSequence().substring(start.intValue() - 1, end.intValue());
+    }
+
+    @Override
+    public ChromosomeOutDTO updateSequence(Long id, String newSequence) {
+        Chromosome chromosome = chromosomeRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Cromosoma no encontrado"));
+
+        chromosome.setSequence(newSequence);
+        chromosome.setLength((long) newSequence.length());
+
+        Chromosome updated = chromosomeRepository.save(chromosome);
+
+        return new ChromosomeOutDTO(
+                updated.getId(),
+                updated.getName(),
+                updated.getLength(),
+                updated.getSequence(),
+                updated.getGenome().getId()
+        );
     }
 }
