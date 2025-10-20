@@ -22,7 +22,7 @@ public class GeneFunctionController {
         return ResponseEntity.ok(geneFunctionService.getFunctionsByGeneId(geneId));
     }
 
-    // ✅ POST /genes/{geneId}/functions → Asociar una nueva función a un gen
+    //  POST /genes/{geneId}/functions → Asociar una nueva función a un gen
     @PostMapping
     public ResponseEntity<GeneFunctionOutDTO> addFunctionToGene(
             @PathVariable Long geneId,
