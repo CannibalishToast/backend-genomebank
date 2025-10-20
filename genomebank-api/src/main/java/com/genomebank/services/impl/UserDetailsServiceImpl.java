@@ -1,14 +1,11 @@
-package com.genomebank.services;
+package com.genomebank.services.impl;
 
 import com.genomebank.entities.User;
 import com.genomebank.repositories.UserRepository;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
