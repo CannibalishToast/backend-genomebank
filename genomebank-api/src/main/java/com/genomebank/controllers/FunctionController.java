@@ -1,6 +1,5 @@
 package com.genomebank.controllers;
 
-
 import com.genomebank.dto.in.FunctionInDTO;
 import com.genomebank.dto.response.FunctionOutDTO;
 import com.genomebank.services.impl.FunctionService;
@@ -23,31 +22,34 @@ public class FunctionController {
             @RequestParam(required = false) String code,
             @RequestParam(required = false) String category
     ) {
-        return ResponseEntity.ok(functionService.findAllFiltered(code, category));
+        return ResponseEntity.ok(functionService.getAllFunctions(code, category));
     }
 
     // GET /functions/{id} → Consultar una función específica
     @GetMapping("/{id}")
     public ResponseEntity<FunctionOutDTO> getFunctionById(@PathVariable Long id) {
-        return ResponseEntity.ok(functionService.findById(id));
+        return ResponseEntity.ok(functionService.getFunctionById(id));
     }
 
     // POST /functions → Crear una nueva función (solo ADMIN)
     @PostMapping
     public ResponseEntity<FunctionOutDTO> createFunction(@RequestBody FunctionInDTO dto) {
-        return ResponseEntity.ok(functionService.create(dto));
+        return ResponseEntity.ok(functionService.createFunction(dto));
     }
 
     // PUT /functions/{id} → Actualizar una función (solo ADMIN)
     @PutMapping("/{id}")
-    public ResponseEntity<FunctionOutDTO> updateFunction(@PathVariable Long id, @RequestBody FunctionInDTO dto) {
-        return ResponseEntity.ok(functionService.update(id, dto));
+    public ResponseEntity<FunctionOutDTO> updateFunction(
+            @PathVariable Long id,
+            @RequestBody FunctionInDTO dto
+    ) {
+        return ResponseEntity.ok(functionService.updateFunction(id, dto));
     }
 
     // DELETE /functions/{id} → Eliminar una función (solo ADMIN)
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteFunction(@PathVariable Long id) {
-        functionService.delete(id);
+        functionService.deleteFunction(id);
         return ResponseEntity.noContent().build();
     }
 }
