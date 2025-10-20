@@ -1,8 +1,8 @@
 package com.genomebank.controllers;
 
-
+import com.genomebank.dto.in.GeneInDTO;
 import com.genomebank.dto.response.GeneOutDTO;
-import com.genomebank.services.impl.GeneService;
+import com.genomebank.services.IGeneService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,9 +14,9 @@ import java.util.List;
 @RequiredArgsConstructor
 public class GeneController {
 
-    private final GeneService geneService;
+    private final IGeneService geneService;
 
-    // GET /genes → Listar todos los genes, con filtros opcionales (?chromosomeId=, ?start=, ?end=, ?symbol=)
+    // ✅ GET /genes → listar todos o filtrar por cromosoma, rango o símbolo
     @GetMapping
     public ResponseEntity<List<GeneOutDTO>> getAllGenes(
             @RequestParam(required = false) Long chromosomeId,
@@ -24,44 +24,49 @@ public class GeneController {
             @RequestParam(required = false) Long end,
             @RequestParam(required = false) String symbol
     ) {
-        return ResponseEntity.ok(geneService.findWithFilters(chromosomeId, start, end, symbol));
+        return ResponseEntity.ok(geneService.getAllGenes(chromosomeId, start, end, symbol));
     }
 
-    // GET /genes/{id} → Consultar un gen específico
+    // ✅ GET /genes/{id} → obtener un gen específico
     @GetMapping("/{id}")
     public ResponseEntity<GeneOutDTO> getGeneById(@PathVariable Long id) {
-        return ResponseEntity.ok(geneService.findById(id));
+        return ResponseEntity.ok(geneService.getGeneById(id));
     }
 
-    // POST /genes → Registrar un nuevo gen (solo ADMIN)
+    // ✅ POST /genes → crear un nuevo gen
     @PostMapping
     public ResponseEntity<GeneOutDTO> createGene(@RequestBody GeneInDTO dto) {
-        return ResponseEntity.ok(geneService.create(dto));
+        return ResponseEntity.ok(geneService.createGene(dto));
     }
 
-    // PUT /genes/{id} → Actualizar un gen (solo ADMIN)
+    // ✅ PUT /genes/{id} → actualizar un gen
     @PutMapping("/{id}")
-    public ResponseEntity<GeneOutDTO> updateGene(@PathVariable Long id, @RequestBody GeneInDTO dto) {
-        return ResponseEntity.ok(geneService.update(id, dto));
+    public ResponseEntity<GeneOutDTO> updateGene(
+            @PathVariable Long id,
+            @RequestBody GeneInDTO dto
+    ) {
+        return ResponseEntity.ok(geneService.updateGene(id, dto));
     }
 
-    // DELETE /genes/{id} → Eliminar un gen (solo ADMIN)
+    // ✅ DELETE /genes/{id} → eliminar un gen
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteGene(@PathVariable Long id) {
-        geneService.delete(id);
+        geneService.deleteGene(id);
         return ResponseEntity.noContent().build();
     }
 
-
-    // GET /genes/{id}/sequence → Consultar la secuencia del gen
+    // ✅ GET /genes/{id}/sequence → obtener secuencia del gen
     @GetMapping("/{id}/sequence")
     public ResponseEntity<String> getGeneSequence(@PathVariable Long id) {
-        return ResponseEntity.ok(geneService.getSequence(id));
+        return ResponseEntity.ok(geneService.getGeneSequence(id));
     }
 
-    // PUT /genes/{id}/sequence (solo ADMIN) → Registrar o actualizar la secuencia de ADN del gen
+    // ✅ PUT /genes/{id}/sequence → actualizar secuencia del gen
     @PutMapping("/{id}/sequence")
-    public ResponseEntity<String> updateGeneSequence(@PathVariable Long id, @RequestBody String newSequence) {
-        return ResponseEntity.ok(geneService.updateSequence(id, newSequence));
+    public ResponseEntity<GeneOutDTO> updateGeneSequence(
+            @PathVariable Long id,
+            @RequestBody String newSequence
+    ) {
+        return ResponseEntity.ok(geneService.updateGeneSequence(id, newSequence));
     }
 }
